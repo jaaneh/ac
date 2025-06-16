@@ -3,12 +3,12 @@ import { Database } from 'bun:sqlite'
 export const db = new Database(':memory:')
 
 db.run(`
-  CREATE TABLE IF NOT EXISTS hender (
+  CREATE TABLE IF NOT EXISTS hands (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    kort TEXT NOT NULL,
+    card TEXT NOT NULL,
     type TEXT NOT NULL,
-    rangering INTEGER NOT NULL,
-    beskrivelse TEXT NOT NULL,
-    opprettet DATETIME DEFAULT CURRENT_TIMESTAMP
+    ranking INTEGER NOT NULL,
+    description TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )
 `)

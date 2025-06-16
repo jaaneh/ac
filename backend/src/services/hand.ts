@@ -4,17 +4,17 @@ import { type PokerHand } from '../types'
 /**
  * Lagrer en pokerhånd i databasen og returnerer hånden med ID
  */
-export function lagreHand(hand: PokerHand): PokerHand {
+export function saveHand(hand: PokerHand): PokerHand {
   const stmt = db.prepare(`
-    INSERT INTO hender (kort, type, rangering, beskrivelse)
+    INSERT INTO hands (card, type, ranking, description)
     VALUES (?, ?, ?, ?)
   `)
 
   const result = stmt.run(
-    JSON.stringify(hand.kort),
+    JSON.stringify(hand.card),
     hand.type,
-    hand.rangering,
-    hand.beskrivelse
+    hand.ranking,
+    hand.description
   )
 
   return {
@@ -26,10 +26,10 @@ export function lagreHand(hand: PokerHand): PokerHand {
 /**
  * Henter alle pokerhender fra databasen sortert etter opprettelsestid (nyest først)
  */
-export function hentAlleHender(): PokerHand[] {
+export function getAllHands(): PokerHand[] {
   const stmt = db.prepare(`
-    SELECT id, kort, type, rangering, beskrivelse, opprettet
-    FROM hender
+    SELECT id, card, type, ranking, description, created_at
+    FROM hands
     ORDER BY id DESC
   `)
 
@@ -37,10 +37,10 @@ export function hentAlleHender(): PokerHand[] {
 
   return rows.map(row => ({
     id: row.id,
-    kort: JSON.parse(row.kort),
+    card: JSON.parse(row.card),
     type: row.type,
-    rangering: row.rangering,
-    beskrivelse: row.beskrivelse,
+    ranking: row.ranking,
+    description: row.description,
     opprettet: row.opprettet
   }))
 }
@@ -50,11 +50,11 @@ export function hentAlleHender(): PokerHand[] {
  * Brukes for sammenligning av spesifikke hender
  * @returns Array med pokerhender som matcher IDene
  */
-export function hentHenderMedId(ider: number[]): PokerHand[] {
+export function getHandsById(ider: number[]): PokerHand[] {
   const placeholders = ider.map(() => '?').join(',')
   const stmt = db.prepare(`
-    SELECT id, kort, type, rangering, beskrivelse, opprettet
-    FROM hender
+    SELECT id, card, type, ranking, description, created_at
+    FROM hands
     WHERE id IN (${placeholders})
   `)
 
@@ -63,10 +63,10 @@ export function hentHenderMedId(ider: number[]): PokerHand[] {
 
   return rows.map(row => ({
     id: row.id,
-    kort: JSON.parse(row.kort),
+    card: JSON.parse(row.card),
     type: row.type,
-    rangering: row.rangering,
-    beskrivelse: row.beskrivelse,
-    opprettet: row.opprettet
+    ranking: row.ranking,
+    description: row.description,
+    created_at: row.created_at
   }))
 }
