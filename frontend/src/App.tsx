@@ -89,12 +89,12 @@ function App() {
               <div id="current-hand">
                 <h3 className="text-lg font-semibold mt-4">Hand #{currentHand.id}</h3>
                 <div className="flex gap-2 font-mono text-2xl my-2">
-                  {currentHand.kort.map((card, index) => (
+                  {currentHand.card.map((card, index) => (
                     <Card key={index} card={card} />
                   ))}
                 </div>
-                <p className="font-semibold">{currentHand.beskrivelse}</p>
-                <p>Rangering: {currentHand.rangering}/10</p>
+                <p className="font-semibold">{currentHand.description}</p>
+                <p>Ranking: {currentHand.ranking}/10</p>
               </div>
             )}
           </div>
@@ -119,24 +119,24 @@ function App() {
 
             {comparisonResult && (
               <div className="bg-yellow-100 border-2 border-yellow-400 p-4 mt-4">
-                <h3 className="text-lg font-semibold mb-2">Result: {comparisonResult.beskrivelse} (Hand #{comparisonResult.vinner.id})</h3>
+                <h3 className="text-lg font-semibold mb-2">Result: {comparisonResult.description} (Hand #{comparisonResult.winner.id})</h3>
                 <h4 className="font-semibold mb-2">Winning hand:</h4>
                 <div className="flex gap-2 font-mono text-2xl my-2">
-                  {comparisonResult.vinner.kort.map((card, index) => (
+                  {comparisonResult.winner.card.map((card, index) => (
                     <Card key={index} card={card} />
                   ))}
                 </div>
-                <p className="font-semibold">{comparisonResult.vinner.beskrivelse}</p>
+                <p className="font-semibold">{comparisonResult.winner.description}</p>
 
-                <h4 className="font-semibold mt-4 mb-2">All hands:</h4>
-                {comparisonResult.hender.map((hand) => (
+                <h4 className="font-semibold mt-4 mb-2">Compared hands:</h4>
+                {comparisonResult.hands.map((hand) => (
                   <div key={hand.id} className="my-2 p-2 bg-gray-100 border border-gray-300">
                     <div className="flex gap-2 font-mono text-2xl my-2">
-                      {hand.kort.map((card, index) => (
+                      {hand.card.map((card, index) => (
                         <Card key={index} card={card} />
                       ))}
                     </div>
-                    <p>Hand #{hand.id}: {hand.beskrivelse}</p>
+                    <p>Hand #{hand.id}: {hand.description}</p>
                   </div>
                 ))}
               </div>
