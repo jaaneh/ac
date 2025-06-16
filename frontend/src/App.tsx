@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { VisHand } from './components/vis-hand';
-import { Kort } from './components/kort'
+import { ShowHand } from './components/show-hand';
+import { Card } from './components/card'
 import { generateNewHand, getAllHands, compareHands } from './utils/api';
 import type { PokerHand, ComparisonResult } from './types';
 
@@ -20,7 +20,7 @@ function App() {
       const hands = await getAllHands();
       setAllHands(hands);
     } catch (err) {
-      setUiState(prev => ({ ...prev, error: 'Feil ved henting av hender: ' + (err as Error).message }));
+      setUiState(prev => ({ ...prev, error: 'Error fetching hands: ' + (err as Error).message }));
     }
   };
 
@@ -32,7 +32,7 @@ function App() {
       setCurrentHand(hand);
       setAllHands(prevHands => [hand, ...prevHands]);
     } catch (err) {
-      setUiState(prev => ({ ...prev, error: 'Feil ved generering av hånd: ' + (err as Error).message }));
+      setUiState(prev => ({ ...prev, error: 'Error generating hand: ' + (err as Error).message }));
     } finally {
       setUiState(prev => ({ ...prev, loading: false }));
     }
@@ -46,7 +46,7 @@ function App() {
       .filter(id => !isNaN(id));
 
     if (ids.length < 2) {
-      setUiState(prev => ({ ...prev, error: 'Du må oppgi minst 2 hånd-IDer' }));
+      setUiState(prev => ({ ...prev, error: 'You must provide at least 2 hand IDs' }));
       return;
     }
 
@@ -55,7 +55,7 @@ function App() {
       const result = await compareHands(ids);
       setComparisonResult(result);
     } catch (err) {
-      setUiState(prev => ({ ...prev, error: 'Feil ved sammenligning: ' + (err as Error).message }));
+      setUiState(prev => ({ ...prev, error: 'Error comparing hands: ' + (err as Error).message }));
     } finally {
       setUiState(prev => ({ ...prev, loading: false }));
     }
@@ -66,7 +66,7 @@ function App() {
       <div className="font-sans max-w-6xl mx-auto p-5">
         <div className="min-h-[calc(100vh-2.5rem)] bg-gray-800 p-8 shadow-2xl border border-gray-700">
           <h1 className="text-center mb-8 text-yellow-400 text-3xl font-bold">
-            Poker Hånd Analysator
+            Poker Hand Analyser
           </h1>
 
           {uiState.error && (
@@ -76,37 +76,37 @@ function App() {
           )}
 
           <div className="bg-white text-black p-5 my-4 shadow-lg border border-gray-300">
-            <h2 className="text-xl font-semibold mb-4">Generer Ny Hånd</h2>
+            <h2 className="text-xl font-semibold mb-4">Generate New Hand</h2>
             <button
               className="bg-gradient-to-r from-orange-500 to-orange-600 text-white border-none px-6 py-3 cursor-pointer text-base mx-2 my-2 transition-transform hover:scale-105 disabled:opacity-50"
               onClick={handleGenerateHand}
               disabled={uiState.loading}
             >
-              {uiState.loading ? 'Deler ut...' : 'Del ut kort'}
+              {uiState.loading ? 'Dealing...' : 'Deal'}
             </button>
 
             {currentHand && (
               <div id="current-hand">
-                <h3 className="text-lg font-semibold mt-4">Hånd #{currentHand.id}</h3>
+                <h3 className="text-lg font-semibold mt-4">Hand #{currentHand.id}</h3>
                 <div className="flex gap-2 font-mono text-2xl my-2">
-                  {currentHand.kort.map((kort, index) => (
-                    <Kort key={index} kort={kort} />
+                  {currentHand.card.map((card, index) => (
+                    <Card key={index} card={card} />
                   ))}
                 </div>
-                <p className="font-semibold">{currentHand.beskrivelse}</p>
-                <p>Rangering: {currentHand.rangering}/10</p>
+                <p className="font-semibold">{currentHand.description}</p>
+                <p>Ranking: {currentHand.ranking}/10</p>
               </div>
             )}
           </div>
 
           <div className="bg-white text-black p-5 my-4 shadow-lg border border-gray-300">
-            <h2 className="text-xl font-semibold mb-4">Sammenlign Hender</h2>
-            <p>Skriv inn hånd-ID-er (kommaseparert), f.eks: 1,2,3</p>
+            <h2 className="text-xl font-semibold mb-4">Compare Hands</h2>
+            <p>Enter hand IDs (comma-separated), e.g: 1,2,3</p>
             <input
               type="text"
               value={handIds}
               onChange={(e) => setHandIds(e.target.value)}
-              placeholder="Hånd ID-er"
+              placeholder="Hand IDs"
               className="p-2 border border-gray-300 m-1 text-black"
             />
             <button
@@ -114,29 +114,29 @@ function App() {
               onClick={handleCompareHands}
               disabled={uiState.loading}
             >
-              {uiState.loading ? 'Sammenligner...' : 'Sammenlign'}
+              {uiState.loading ? 'Comparing...' : 'Compare'}
             </button>
 
             {comparisonResult && (
               <div className="bg-yellow-100 border-2 border-yellow-400 p-4 mt-4">
-                <h3 className="text-lg font-semibold mb-2">Resultat: {comparisonResult.beskrivelse} (Hånd #{comparisonResult.vinner.id})</h3>
-                <h4 className="font-semibold mb-2">Vinnende hånd:</h4>
+                <h3 className="text-lg font-semibold mb-2">Result: {comparisonResult.description} (Hand #{comparisonResult.winner.id})</h3>
+                <h4 className="font-semibold mb-2">Winning hand:</h4>
                 <div className="flex gap-2 font-mono text-2xl my-2">
-                  {comparisonResult.vinner.kort.map((kort, index) => (
-                    <Kort key={index} kort={kort} />
+                  {comparisonResult.winner.card.map((card, index) => (
+                    <Card key={index} card={card} />
                   ))}
                 </div>
-                <p className="font-semibold">{comparisonResult.vinner.beskrivelse}</p>
+                <p className="font-semibold">{comparisonResult.winner.description}</p>
 
-                <h4 className="font-semibold mt-4 mb-2">Alle hender:</h4>
-                {comparisonResult.hender.map((hånd) => (
-                  <div key={hånd.id} className="my-2 p-2 bg-gray-100 border border-gray-300">
+                <h4 className="font-semibold mt-4 mb-2">Compared hands:</h4>
+                {comparisonResult.hands.map((hand) => (
+                  <div key={hand.id} className="my-2 p-2 bg-gray-100 border border-gray-300">
                     <div className="flex gap-2 font-mono text-2xl my-2">
-                      {hånd.kort.map((kort, index) => (
-                        <Kort key={index} kort={kort} />
+                      {hand.card.map((card, index) => (
+                        <Card key={index} card={card} />
                       ))}
                     </div>
-                    <p>Hånd #{hånd.id}: {hånd.beskrivelse}</p>
+                    <p>Hand #{hand.id}: {hand.description}</p>
                   </div>
                 ))}
               </div>
@@ -144,17 +144,17 @@ function App() {
           </div>
 
           <div className="bg-white text-black p-5 my-4 shadow-lg border border-gray-300">
-            <h2 className="text-xl font-semibold mb-4">Tidligere Hender</h2>
+            <h2 className="text-xl font-semibold mb-4">Previous Hands</h2>
             <button
               className="bg-gradient-to-r from-orange-500 to-orange-600 text-white border-none px-6 py-3 cursor-pointer text-base mx-2 my-2 transition-transform hover:scale-105 disabled:opacity-50"
               onClick={loadAllHands}
               disabled={uiState.loading}
             >
-              {uiState.loading ? 'Henter...' : 'Vis alle hender'}
+              {uiState.loading ? 'Loading...' : 'Show all hands'}
             </button>
             <div className="max-h-[32rem] overflow-y-auto">
               {allHands.map((hand) => (
-                <VisHand key={hand.id} hand={hand} />
+                <ShowHand key={hand.id} hand={hand} />
               ))}
             </div>
           </div>

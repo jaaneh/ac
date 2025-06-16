@@ -1,13 +1,13 @@
 export interface PokerHand {
   id: number;
-  kort: string[];
-  beskrivelse: string;
-  rangering: number;
-  opprettet: string;
+  card: string[];
+  description: string;
+  ranking: number;
+  created_at: string;
 }
 
 export interface ComparisonResult {
-  beskrivelse: string;
-  vinner: PokerHand;
-  hender: PokerHand[];
+  description: string;
+  winner: PokerHand;
+  hands: PokerHand[];
 }
